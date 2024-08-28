@@ -1,9 +1,19 @@
-import { View, Image, Text } from "react-native";
+import { View, Image, Text, ImageSourcePropType } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
 import { icons, tabsData } from "../../constants";
 
-const TabIcon = ({ icon, color, focused, name }) => {
+const TabIcon = ({
+  icon,
+  color,
+  focused,
+  name,
+}: {
+  icon: ImageSourcePropType;
+  color: string;
+  name: string;
+  focused: boolean;
+}) => {
   return (
     <View className="flex items-center justify-center flex-col gap-y-1">
       <Image
