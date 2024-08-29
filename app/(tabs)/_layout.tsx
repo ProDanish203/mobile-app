@@ -49,6 +49,7 @@ const TabsLayout = () => {
             name={tab.name}
             options={{
               title: tab.title,
+              headerShown: false,
               tabBarIcon: ({ focused, color }) => (
                 <TabIcon
                   icon={tab.icon}

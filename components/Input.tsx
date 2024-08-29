@@ -28,7 +28,6 @@ export const Input = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
-
   return (
     <View className={cn("space-y-2 mt-7", className)}>
       <Text className="text-base text-gray-100 font-pmedium">{title}</Text>
@@ -53,7 +52,6 @@ export const Input = ({
           </TouchableOpacity>
         )}
       </View>
-      
     </View>
   );
 };
