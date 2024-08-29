@@ -119,3 +119,17 @@ export const logout = async () => {
     throw new Error(error.message);
   }
 };
+
+export const getAllPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(
+      config.databaseId,
+      config.videoCollectionId
+    );
+
+    return posts.documents;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+};
