@@ -1,13 +1,19 @@
-import { Button } from "@/components";
+import { Button, Loader } from "@/components";
 import { images } from "@/constants";
+import { useAuth } from "@/store/AuthProvider";
 import { Redirect, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text, View, ScrollView, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const App = () => {
+  const { isLoggedIn, loading } = useAuth();
+
+  if (!loading && isLoggedIn) return <Redirect href="/home" />;
+
   return (
     <SafeAreaView className="bg-primary h-full">
+      <Loader isLoading={loading} />
       <ScrollView contentContainerStyle={{ height: "100%" }}>
         <View className="w-full justify-center items-center h-[85vh] px-4 pt-10">
           <Image

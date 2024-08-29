@@ -1,12 +1,15 @@
-import { View, Text, ScrollView, Image } from "react-native";
+import { View, Text, ScrollView, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import { Button, Input } from "@/components";
-import { Link, Redirect } from "expo-router";
-import { createUser } from "@/lib/appwrite";
+import { Link, Redirect, router } from "expo-router";
+import { createUser, getCurrentUser } from "@/lib/appwrite";
+import { useAuth } from "@/store/AuthProvider";
 
 const Signup = () => {
+  const { setUser, setIsLoggedIn } = useAuth();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -17,24 +20,29 @@ const Signup = () => {
 
   const handleSubmit = async () => {
     if (!form.username || !form.email || !form.password) {
-      alert("Please fill all fields");
+      Alert.alert("Error", "Please fill all fields");
       return;
     }
-    const user = await createUser({
-      username: form.username,
-      email: form.email,
-      password: form.password,
-    });
-
-    if (user) {
-      alert("User created successfully");
-      setForm({
-        email: "",
-        password: "",
-        username: "",
+    setIsSubmitting(true);
+    try {
+      const user = await createUser({
+        username: form.username,
+        email: form.email,
+        password: form.password,
       });
-      Redirect({ href: "/login" });
-    } else alert("Failed to create user");
+
+      // Set the user to global state
+      const res = await getCurrentUser();
+      setUser(res);
+      setIsLoggedIn(true);
+
+      if (user) router.replace("/home");
+      else Alert.alert("Error", "Failed to create user");
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return (
     <SafeAreaView className="bg-primary h-full">

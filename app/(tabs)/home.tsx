@@ -1,5 +1,6 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
+import { getCurrentUser } from "@/lib/appwrite";
 
 const home = () => {
   return (

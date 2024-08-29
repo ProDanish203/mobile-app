@@ -1,11 +1,18 @@
-import { Account, Client, ID } from "react-native-appwrite";
+import {
+  Account,
+  Avatars,
+  Client,
+  Databases,
+  ID,
+  Query,
+} from "react-native-appwrite";
 
 export const config = {
   endpoint: "https://cloud.appwrite.io/v1",
   platform: "com.danish.aora",
   projectId: "66cf0b840019d71f3d8d",
   databaseId: "66cf0c9b003851f4f6e1",
-  userCollectiond: "66cf0cb40011e3eb7fbb",
+  userCollectionId: "66cf0cb40011e3eb7fbb",
   videoCollectionId: "66cf0cc90001175dba01",
   storageId: "66cf0df60001155d44cd",
 };
@@ -18,6 +25,23 @@ client
   .setPlatform(config.platform);
 
 const account = new Account(client);
+const avatars = new Avatars(client);
+const databases = new Databases(client);
+
+export const login = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
+  try {
+    const session = await account.createEmailPasswordSession(email, password);
+    return session;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
 
 export const createUser = async ({
   username,
@@ -28,14 +52,70 @@ export const createUser = async ({
   email: string;
   password: string;
 }) => {
-  const user = await account.create(ID.unique(), email, password, username);
-  return user;
-  //   account.create(ID.unique(), email, password, username).then(
-  //     function (response) {
-  //       console.log(response);
-  //     },
-  //     function (error) {
-  //       console.log(error);
-  //     }
-  //   );
+  try {
+    const newAccount = await account.create(
+      ID.unique(),
+      email,
+      password,
+      username
+    );
+    const avatarUrl = avatars.getInitials(username);
+    if (!newAccount) throw Error;
+    await login({ email, password });
+
+    const user = await databases.createDocument(
+      config.databaseId,
+      config.userCollectionId,
+      ID.unique(),
+      {
+        accountId: newAccount.$id,
+        username,
+        email,
+        avatar: avatarUrl,
+      }
+    );
+    return user;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+};
+
+export const getAccount = async () => {
+  try {
+    const currentAccount = await account.get();
+    if (!currentAccount) throw Error;
+    return currentAccount;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+};
+
+export const getCurrentUser = async () => {
+  try {
+    const currentAccount = await getAccount();
+    if (!currentAccount) throw Error;
+    const currentUser = await databases.listDocuments(
+      config.databaseId,
+      config.userCollectionId,
+      [Query.equal("accountId", [currentAccount.$id])]
+    );
+    if (!currentUser) throw Error;
+
+    return currentUser.documents[0];
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+};
+
+export const logout = async () => {
+  try {
+    const session = account.deleteSession("current");
+    return session;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message);
+  }
 };

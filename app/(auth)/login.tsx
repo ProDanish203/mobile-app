@@ -1,11 +1,15 @@
-import { View, Text, ScrollView, Image } from "react-native";
+import { View, Text, ScrollView, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import { Button, Input } from "@/components";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import { getCurrentUser, login } from "@/lib/appwrite";
+import { useAuth } from "@/store/AuthProvider";
 
 const LoginPage = () => {
+  const { setUser, setIsLoggedIn } = useAuth();
+
   const [form, setform] = useState({
     email: "",
     password: "",
@@ -13,8 +17,29 @@ const LoginPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    // Do something
+  const handleSubmit = async () => {
+    if (!form.email || !form.password) {
+      Alert.alert("Error", "Please fill all fields");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const user = await login({
+        email: form.email,
+        password: form.password,
+      });
+      // Set the user to global state
+      const res = await getCurrentUser();
+      setUser(res);
+      setIsLoggedIn(true);
+      if (user) router.replace("/home");
+      else Alert.alert("Error", "Invalid Credentials");
+    } catch (error: any) {
+      console.log(error);
+      Alert.alert("Error", error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
