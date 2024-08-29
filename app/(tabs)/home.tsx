@@ -1,12 +1,20 @@
-import { View, Text, FlatList, Image } from "react-native";
-import React from "react";
+import { View, Text, FlatList, Image, RefreshControl } from "react-native";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
-import { SearchBar } from "@/components";
+import { EmptyState, SearchBar, Trending } from "@/components";
 
 const home = () => {
+  const [searchValue, setSearchValue] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    // Refetchh new data
+    setRefreshing(false);
+  };
   return (
-    <SafeAreaView className="bg-primary">
+    <SafeAreaView className="bg-primary min-h-screen">
       <FlatList
         data={[{ id: 1 }, { id: 2 }, { id: 3 }]}
         keyExtractor={(item: any) => item.id}
@@ -34,9 +42,30 @@ const home = () => {
               </View>
             </View>
 
-            <SearchBar />
+            <SearchBar
+              value={searchValue}
+              handleChangeText={(e: string) => setSearchValue(e)}
+              placeholder="Search for a video topic"
+            />
+
+            <View className="w-full flex-1 pt-5 pb-8">
+              <Text className="text-gray-100 text-lg font-pregular mb-3">
+                Latest Videos
+              </Text>
+
+              <Trending posts={[{ id: 1 }, { id: 2 }, { id: 3 }] ?? []} />
+            </View>
           </View>
         )}
+        ListEmptyComponent={() => (
+          <EmptyState
+            title="No Videos Found"
+            subTitle="Be the first one to upload a video"
+          />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </SafeAreaView>
   );

@@ -1,21 +1,14 @@
-import { View, Text, Image, TextInput, KeyboardType } from "react-native";
+import { View, Image, TextInput, TouchableOpacity } from "react-native";
 import React from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { icons } from "@/constants";
 
 export const SearchBar = ({
-  title,
   value,
   handleChangeText,
-  className,
-  keyboardType,
   placeholder,
 }: {
-  title: string;
   value: string;
   handleChangeText: any;
-  className?: string;
-  keyboardType?: KeyboardType;
   placeholder?: string;
 }) => {
   return (
@@ -26,11 +19,11 @@ export const SearchBar = ({
         placeholder={placeholder}
         placeholderTextColor="#7b7b8b"
         onChangeText={handleChangeText}
-        keyboardType={keyboardType}
+        keyboardType="default"
       />
 
       <TouchableOpacity>
-        <Image source={icons.search} />
+        <Image source={icons.search} resizeMode="contain" className="w-5 h-5" />
       </TouchableOpacity>
     </View>
   );
