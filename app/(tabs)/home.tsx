@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import { EmptyState, SearchBar, Trending, VideoCard } from "@/components";
-import { getAllPosts } from "@/lib/appwrite";
+import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
 import { useAppwrite } from "@/lib/useAppwrite";
 
 const home = () => {
@@ -18,6 +18,8 @@ const home = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   const { data, isLoading, refresh } = useAppwrite(getAllPosts);
+  const { data: latestPosts, isLoading: latestPostsLoading } =
+    useAppwrite(getLatestPosts);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -29,7 +31,7 @@ const home = () => {
       <FlatList
         data={data}
         keyExtractor={(item: any) => item.id}
-        renderItem={({ item }) => <VideoCard data={item}/>}
+        renderItem={({ item }) => <VideoCard data={item} />}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
             <View className="justify-between items-start flex-row mb-6">
@@ -62,7 +64,7 @@ const home = () => {
                 Latest Videos
               </Text>
 
-              <Trending posts={[{ id: 1 }, { id: 2 }, { id: 3 }] ?? []} />
+              {/* <Trending posts={latestPosts ?? []} /> */}
             </View>
           </View>
         )}

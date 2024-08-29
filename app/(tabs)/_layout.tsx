@@ -1,7 +1,7 @@
 import { View, Image, Text, ImageSourcePropType } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
-import { icons, tabsData } from "../../constants";
+import { tabsData } from "../../constants";
 
 const TabIcon = ({
   icon,
@@ -22,7 +22,12 @@ const TabIcon = ({
         tintColor={color}
         className="w-6 h-6"
       />
-      <Text style={{ color }}>{name}</Text>
+      <Text
+        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
+        style={{ color }}
+      >
+        {name}
+      </Text>
     </View>
   );
 };

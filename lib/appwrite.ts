@@ -133,3 +133,18 @@ export const getAllPosts = async () => {
     throw new Error(error.message);
   }
 };
+
+export const getLatestPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(
+      config.databaseId,
+      config.videoCollectionId,
+      [Query.orderDesc("$createdAt"), Query.limit(7)]
+    );
+
+    return posts.documents;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+};

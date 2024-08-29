@@ -59,6 +59,6 @@ export const tabsData = [
   {
     name: "profile",
     title: "Profile",
-    icon: profile,
+    icon: profileIcon,
   },
 ];

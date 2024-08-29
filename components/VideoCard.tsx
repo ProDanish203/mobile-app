@@ -2,14 +2,15 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { IVideo } from "@/types/type";
 import { icons } from "@/constants";
+import { Video, ResizeMode } from "expo-av";
 
 export const VideoCard = ({ data }: { data: IVideo }) => {
   const { title, prompt, video, thumbnail, createdBy } = data;
-
   const [play, setPlay] = useState(false);
 
   return (
     <View className="flex-col items-center px-4 mb-14">
+      {/* Author Information and Title */}
       <View className="flex-row gap-3 items-start">
         <View className="justify-center items-center flex-row flex-1">
           <View className="w-[46px] h-[46px] rounded-lg border border-secondary justify-center items-center p-0.5">
@@ -40,8 +41,19 @@ export const VideoCard = ({ data }: { data: IVideo }) => {
           <Image source={icons.menu} resizeMode="contain" className="w-5 h-5" />
         </View>
       </View>
+
+      {/* Video and Thumbnail Dipslay */}
       {play ? (
-        <Text className="text-white text-2xl">Playing</Text>
+        <Video
+          source={{ uri: video }}
+          className="w-full h-60 rounded-xl mt-3"
+          resizeMode={ResizeMode.CONTAIN}
+          useNativeControls
+          shouldPlay
+          onPlaybackStatusUpdate={(status) => {
+            if (status.didJustFinish) setPlay(false);
+          }}
+        />
       ) : (
         <TouchableOpacity
           activeOpacity={0.7}
