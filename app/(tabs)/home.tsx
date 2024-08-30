@@ -26,7 +26,7 @@ const home = () => {
     <SafeAreaView className="bg-primary min-h-screen pt-5">
       <FlatList
         data={data}
-        keyExtractor={(item: any) => item.id}
+        keyExtractor={(item: any) => item.$id}
         renderItem={({ item }) => <VideoCard data={item} />}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
@@ -51,13 +51,15 @@ const home = () => {
 
             <SearchBar placeholder="Search for a video topic" />
 
-            <View className="w-full flex-1 pt-5 pb-8">
-              <Text className="text-gray-100 text-lg font-pregular mb-3">
-                Latest Videos
-              </Text>
+            {latestPosts && latestPosts.length > 0 && (
+              <View className="w-full flex-1 pt-5 pb-8">
+                <Text className="text-gray-100 text-lg font-pregular mb-3">
+                  Latest Videos
+                </Text>
 
-              {/* <Trending posts={latestPosts ?? []} /> */}
-            </View>
+                <Trending posts={latestPosts} />
+              </View>
+            )}
           </View>
         )}
         ListEmptyComponent={() => (

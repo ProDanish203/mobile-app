@@ -220,14 +220,13 @@ export const uploadFile = async ({
     size: file.fileSize,
     uri: file.uri,
   };
-  console.log("File: ", file);
+
   try {
     const uploadedFile = await storage.createFile(
       config.storageId,
       ID.unique(),
       asset
     );
-    console.log("Uploaded File: ", uploadedFile);
 
     const fileUrl = await getFilePreview({ fileId: uploadedFile.$id, type });
 
@@ -257,20 +256,20 @@ export const createPost = async ({
       uploadFile({ file: video, type: "video" }),
     ]);
 
-    // const post = await databases.createDocument(
-    //   config.databaseId,
-    //   config.videoCollectionId,
-    //   ID.unique(),
-    //   {
-    //     title,
-    //     prompt,
-    //     video: videoUrl,
-    //     thumbnail: thumbnailUrl,
-    //     createdBy: userId,
-    //   }
-    // );
+    const post = await databases.createDocument(
+      config.databaseId,
+      config.videoCollectionId,
+      ID.unique(),
+      {
+        title,
+        prompt,
+        video: videoUrl,
+        thumbnail: thumbnailUrl,
+        createdBy: userId,
+      }
+    );
 
-    // return post;
+    return post;
   } catch (error: any) {
     console.log("Create Post: ", error);
     throw new Error(error.message);

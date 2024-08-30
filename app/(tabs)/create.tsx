@@ -47,10 +47,11 @@ const CreatePage = () => {
       const asset = result.assets[0];
       const file = {
         uri: asset.uri,
-        name: asset.uri.split("/").pop() || "file",
-        type: `${type}/${asset.uri.split(".").pop()}`,
-        size: asset.fileSize,
+        fileName: asset.uri.split("/").pop() || "file",
+        mimeType: asset.type || `${type}/${asset.uri.split(".").pop()}`,
+        fileSize: asset.fileSize,
       };
+
       if (type === "image") setForm({ ...form, thumbnail: file });
       if (type === "video") setForm({ ...form, video: file });
     }
@@ -68,8 +69,8 @@ const CreatePage = () => {
       await createPost({
         title: form.title,
         prompt: form.prompt,
-        thumbnail: form.thumbnail.uri,
-        video: form.video.uri,
+        thumbnail: form.thumbnail,
+        video: form.video,
         userId: user.$id,
       });
 

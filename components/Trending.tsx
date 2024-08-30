@@ -40,7 +40,7 @@ const TrendingItem = ({
     <Animatable.View
       className="mt-5"
       // @ts-ignore
-      animation={activeItem === item.id ? zoomIn : zoomOut}
+      animation={activeItem === item.$id ? zoomIn : zoomOut}
       duration={500}
     >
       {play ? (
@@ -62,10 +62,9 @@ const TrendingItem = ({
         >
           <ImageBackground
             source={{ uri: item.thumbnail }}
-            className="w-52 h-75 rounded-[35px] my-5 overflow-hidden shadow-lg shadow-black/40"
+            className="w-52 h-72 rounded-[35px] my-5 overflow-hidden shadow-lg shadow-black/40"
             resizeMode="cover"
           />
-
           <Image
             source={icons.play}
             className="w-12 h-12 absolute"
@@ -78,8 +77,7 @@ const TrendingItem = ({
 };
 
 export const Trending = ({ posts }: { posts: IVideo[] }) => {
-  const [activeItem, setActiveItem] = useState(posts[1].id);
-
+  const [activeItem, setActiveItem] = useState(posts[0].$id);
   const viewableItemsChanged = ({ viewableItems }: { viewableItems: any }) => {
     if (viewableItems.length > 0) {
       setActiveItem(viewableItems[0].key);
@@ -89,7 +87,7 @@ export const Trending = ({ posts }: { posts: IVideo[] }) => {
   return (
     <FlatList
       data={posts}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.$id}
       renderItem={({ item }) => (
         <TrendingItem activeItem={activeItem} item={item} />
       )}
