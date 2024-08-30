@@ -1,33 +1,29 @@
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  RefreshControl,
-  Alert,
-} from "react-native";
-import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, Image, RefreshControl } from "react-native";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import { EmptyState, SearchBar, Trending, VideoCard } from "@/components";
 import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
 import { useAppwrite } from "@/lib/useAppwrite";
+import { useAuth } from "@/store/AuthProvider";
 
 const home = () => {
-  const [searchValue, setSearchValue] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
+  const { user } = useAuth();
 
   const { data, isLoading, refresh } = useAppwrite(getAllPosts);
   const { data: latestPosts, isLoading: latestPostsLoading } =
     useAppwrite(getLatestPosts);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await refresh();
     setRefreshing(false);
   };
+
   return (
-    <SafeAreaView className="bg-primary min-h-screen">
+    <SafeAreaView className="bg-primary min-h-screen pt-5">
       <FlatList
         data={data}
         keyExtractor={(item: any) => item.id}
@@ -40,7 +36,7 @@ const home = () => {
                   Welcome Back!
                 </Text>
                 <Text className="text-2xl font-psemibold text-white">
-                  Danish Siddiqui
+                  {user?.username || ""}
                 </Text>
               </View>
 
@@ -53,11 +49,7 @@ const home = () => {
               </View>
             </View>
 
-            <SearchBar
-              value={searchValue}
-              handleChangeText={(e: string) => setSearchValue(e)}
-              placeholder="Search for a video topic"
-            />
+            <SearchBar placeholder="Search for a video topic" />
 
             <View className="w-full flex-1 pt-5 pb-8">
               <Text className="text-gray-100 text-lg font-pregular mb-3">

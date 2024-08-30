@@ -112,7 +112,7 @@ export const getCurrentUser = async () => {
 
 export const logout = async () => {
   try {
-    const session = account.deleteSession("current");
+    const session = await account.deleteSession("current");
     return session;
   } catch (error: any) {
     console.log(error);
@@ -140,6 +140,38 @@ export const getLatestPosts = async () => {
       config.databaseId,
       config.videoCollectionId,
       [Query.orderDesc("$createdAt"), Query.limit(7)]
+    );
+
+    return posts.documents;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+};
+
+export const getSearchResults = async (query: string) => {
+  try {
+    const posts = await databases.listDocuments(
+      config.databaseId,
+      config.videoCollectionId,
+      [Query.search("title", query)]
+    );
+
+    if (!posts) return [];
+
+    return posts.documents;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+};
+
+export const getUserPosts = async (userId: string) => {
+  try {
+    const posts = await databases.listDocuments(
+      config.databaseId,
+      config.videoCollectionId,
+      [Query.equal("createdBy", userId)]
     );
 
     return posts.documents;

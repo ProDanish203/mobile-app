@@ -7,9 +7,13 @@ import { router } from "expo-router";
 export const EmptyState = ({
   title,
   subTitle,
+  btnText,
+  isProfile,
 }: {
   title: string;
   subTitle?: string;
+  btnText?: string;
+  isProfile?: boolean;
 }) => {
   return (
     <View className="justify-center items-center px-4">
@@ -24,8 +28,8 @@ export const EmptyState = ({
       </Text>
 
       <Button
-        title="Create A Video"
-        handlePress={() => router.push("/create")}
+        title={isProfile ? "Back to Explore" : "Create A Video"}
+        handlePress={() => router.push(isProfile ? "/home" : "/create")}
         containerStyles="w-full my-5"
       />
     </View>
