@@ -12,26 +12,66 @@ import { Button, Input } from "@/components";
 import { ResizeMode, Video } from "expo-av";
 import { icons } from "@/constants";
 import { router } from "expo-router";
+import { createPost } from "@/lib/appwrite";
+import { useAuth } from "@/store/AuthProvider";
+import * as ImagePicker from "expo-image-picker";
+
+interface FormData {
+  title: string;
+  prompt: string;
+  thumbnail: any;
+  video: any;
+}
 
 const CreatePage = () => {
   const [uploading, setUploading] = useState(false);
-
-  const [form, setForm] = useState({
+  const { user } = useAuth();
+  const [form, setForm] = useState<FormData>({
     title: "",
     thumbnail: null,
     video: null,
     prompt: "",
   });
 
+  const openPicker = async (type: string) => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes:
+        type === "image"
+          ? ImagePicker.MediaTypeOptions.Images
+          : ImagePicker.MediaTypeOptions.Videos,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const asset = result.assets[0];
+      const file = {
+        uri: asset.uri,
+        name: asset.uri.split("/").pop() || "file",
+        type: `${type}/${asset.uri.split(".").pop()}`,
+        size: asset.fileSize,
+      };
+      if (type === "image") setForm({ ...form, thumbnail: file });
+      if (type === "video") setForm({ ...form, video: file });
+    }
+  };
+
   const handleSubmit = async () => {
     if (!form.title || !form.thumbnail || !form.video || !form.prompt) {
       Alert.alert("Error", "Please provide all fields");
       return;
     }
-
+    if (!user) return;
     setUploading(true);
     try {
       // Upload the video
+      await createPost({
+        title: form.title,
+        prompt: form.prompt,
+        thumbnail: form.thumbnail.uri,
+        video: form.video.uri,
+        userId: user.$id,
+      });
 
       setForm({
         title: "",
@@ -59,19 +99,18 @@ const CreatePage = () => {
           handleChangeText={(e: string) => setForm({ ...form, title: e })}
           className="mt-10"
         />
+        {/* Video Input */}
         <View className="mt-7 space-y-2">
           <Text className="text-base text-gray-100 font-pmedium">
             Upload Video
           </Text>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => openPicker("video")}>
             {form.video ? (
               <Video
                 source={{ uri: form.video.uri }}
                 className="w-full h-64 rounded-2xl"
-                useNativeControls
                 resizeMode={ResizeMode.COVER}
-                isLooping
               />
             ) : (
               <View className="w-full h-40 px-4 bg-black-100 rounded-2xl border border-black-200 flex justify-center items-center">
@@ -87,13 +126,13 @@ const CreatePage = () => {
             )}
           </TouchableOpacity>
         </View>
-
+        {/* Thumbnail Input */}
         <View className="mt-7 space-y-2">
           <Text className="text-base text-gray-100 font-pmedium">
             Thumbnail Image
           </Text>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => openPicker("image")}>
             {form.thumbnail ? (
               <Image
                 source={{ uri: form.thumbnail.uri }}
